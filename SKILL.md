@@ -126,13 +126,15 @@ Pregunta cada uno por separado, con su tamaño:
 | Caché de builds de Docker | `docker builder prune -af` | Los próximos builds tardan un poco más |
 | Imágenes de Docker sin usar | `docker image prune -af` | Se vuelven a descargar al usarlas. **Incluye las de proyectos que apagaste con `supabase stop`**; dilo antes de preguntar |
 | Volúmenes de Docker huérfanos | `docker volume ls -f dangling=true` → enséñalos → `docker volume prune` | **Son datos de bases de datos viejas; se pierden.** Pregunta con la lista enfrente |
-| npm | `npm cache clean --force` | Las instalaciones bajan los paquetes de nuevo |
+| npm (paquetes, `_cacache`) | `npm cache clean --force` | Los proyectos siguen igual (cada uno tiene su `node_modules`); el próximo `npm install` de algo nuevo lo baja de internet. Revisa antes que no haya un `npm`/`npx` corriendo |
+| npm (herramientas de `npx`, `_npx`) | `rm -rf ~/.npm/_npx` (`npm cache clean` **no** lo borra) | El próximo `npx algo` lo vuelve a bajar |
 | bun | `bun pm cache rm` | Igual |
 | pnpm | `pnpm store prune` | Solo borra lo que ningún proyecto usa |
 | pip | `pip cache purge` | Igual |
 | Homebrew | `brew cleanup --prune=all` | Borra versiones viejas y descargas |
 | Xcode DerivedData | `rm -rf ~/Library/Developer/Xcode/DerivedData/*` (excepción a la regla 5: Xcode no tiene comando y es 100% regenerable) | El próximo build de Xcode es más lento |
-| Simuladores de iOS | `xcrun simctl delete unavailable` | Solo borra los de versiones que ya no tienes |
+| Simuladores no disponibles | `xcrun simctl delete unavailable` | Nada: son de versiones de iOS que ya no están. Pesan poco |
+| Runtimes viejos de iOS/watchOS/tvOS (sección RUNTIMES; ~7–8 GB cada uno, y **no** aparecen en `~/Library`) | Pregunta antes qué versión usa para probar. Borra sus simuladores (`xcrun simctl delete <udid>`) y luego el runtime (`xcrun simctl runtime delete <id>`). Queda en "Deleting" unos segundos | Se pierden las apps y datos de prueba de esos simuladores. Xcode vuelve a bajar el runtime en Settings → Components si hace falta. Nunca borres el único o el más nuevo sin preguntar |
 | Xcode iOS DeviceSupport | Enséñalo; que el usuario borre versiones viejas de iOS | Se regenera al conectar un iPhone |
 | Playwright / Puppeteer | `npx playwright uninstall --all` | Se reinstalan con `npx playwright install` |
 | `node_modules` de proyectos sin commits en 30+ días | `rm -rf <proyecto>/node_modules` (y `.next`), **un proyecto a la vez, nombrándolo** | Se recupera con `npm install` / `bun install`. Antes revisa que no sea un worktree con cambios sin commit (`git status`) |

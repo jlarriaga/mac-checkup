@@ -142,7 +142,8 @@ check "Cachés de apps (general)" "$HOME/Library/Caches"
 check "Xcode DerivedData" "$HOME/Library/Developer/Xcode/DerivedData"
 check "Simuladores de iOS" "$HOME/Library/Developer/CoreSimulator/Devices"
 check "Xcode Archives" "$HOME/Library/Developer/Xcode/Archives"
-check "npm" "$HOME/.npm"
+check "npm (paquetes)" "$HOME/.npm/_cacache"
+check "npm (herramientas de npx)" "$HOME/.npm/_npx"
 check "bun" "$HOME/.bun/install/cache"
 check "pnpm" "$HOME/Library/pnpm/store"
 check "Yarn" "$HOME/Library/Caches/Yarn"
@@ -153,6 +154,23 @@ check "Gradle" "$HOME/.gradle/caches"
 check "Cargo" "$HOME/.cargo/registry"
 check "Ollama (modelos)" "$HOME/.ollama/models"
 have brew && check "Homebrew" "$(brew --cache 2>/dev/null)"
+
+H "SIMULADORES DE XCODE: RUNTIMES (el sistema iOS/watchOS/tvOS de cada versión)"
+if have xcrun && xcrun simctl help >/dev/null 2>&1; then
+  devs=$(xcrun simctl list devices 2>/dev/null)
+  xcrun simctl runtime list -j 2>/dev/null | awk -F'"' '
+    /"identifier"/ {id=$4} /"sizeBytes"/ {gsub(/[^0-9]/,"",$3); sz=$3} /"version"/ {v=$4}
+    /"platformIdentifier"/ {p=$4; sub(/.*platform\./,"",p); sub(/simulator$/,"",p)}
+    /^  },?$/ {printf "%s|%s|%.1f|%s\n", p, v, sz/1073741824, id}' |
+  while IFS='|' read -r plat ver gb id; do
+    case "$plat" in iphone) name=iOS;; watch) name=watchOS;; appletv) name=tvOS;; xr) name=visionOS;; *) name=$plat;; esac
+    n=$(echo "$devs" | awk -v h="-- $name $ver --" '$0==h{f=1;next} /^--/{f=0} f && /\(/' | wc -l | tr -d ' ')
+    echo "  $name $ver · ${gb} GB · $n simuladores · id $id"
+  done
+  echo "Simuladores no disponibles (de versiones que ya no están): $(xcrun simctl list devices unavailable 2>/dev/null | grep -c '(')"
+else
+  echo "Xcode no está instalado."
+fi
 
 H "SPOTLIGHT"
 mdutil -s /System/Volumes/Data 2>/dev/null | tail -1

@@ -48,7 +48,7 @@ bash ~/.claude/skills/mac-checkup/scripts/diagnostico.sh
 |---|---|
 | Swap y presión de memoria | Cachés de npm, bun, pnpm, pip, Homebrew |
 | Procesos trabados (mucha CPU, sin actividad) | Docker: caché de builds, imágenes y volúmenes |
-| Servidores de desarrollo olvidados | Xcode: DerivedData, simuladores, DeviceSupport |
+| Servidores de desarrollo olvidados | Xcode: DerivedData, simuladores, runtimes de iOS viejos |
 | Docker: contenedores de proyectos inactivos | `node_modules` de proyectos sin tocar en 30+ días |
 | Sesiones de agentes de IA abiertas hace días | Archivos de más de 1 GB e instaladores olvidados |
 | Spotlight indexando tu código | Papelera, WhatsApp, Chrome, respaldos de iPhone |
